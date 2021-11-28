@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'ProjectManagement' " />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.21" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectManagement.Domain\ProjectManagement.Domain.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Microsoft.AspNetCore.Authentication" />
+    <None Remove="System.IdentityModel.Tokens.Jwt" />
+    <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+</Project>
+

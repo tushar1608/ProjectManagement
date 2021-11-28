@@ -1,40 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.OpenApi.Models;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using ProjectManagement.Web.Interfaces;
+    using ProjectManager.Web.Services;
+    using ProjectManagement.Web.Services;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
+    using System.Text;
 
-namespace ProjectManagement
-{
-    public class Startup
+    namespace ProjectManagement
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+        public class Startup
         {
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
+            public Startup(IConfiguration configuration)
             {
-                app.UseDeveloperExceptionPage();
+                Configuration = configuration;
             }
 
-            app.UseRouting();
+            public IConfiguration Configuration { get; }
 
-            app.UseEndpoints(endpoints =>
+            // This method gets called by the runtime. Use this method to add services to the container.
+            public void ConfigureServices(IServiceCollection services)
             {
-                endpoints.MapGet("/", async context =>
+                services.AddControllers();
+                services.AddAuthentication(x => {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }).AddJwtBearer(x => {
+                        x.RequireHttpsMetadata = false;
+                        x.SaveToken = true;
+                        x.TokenValidationParameters = new TokenValidationParameters {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("AEZAKMIPANZERAEZAKMIPANZER")),
+                            ValidateIssuer = false,
+                            ValidateAudience = false
+                        };
+                    });
+                services.AddSingleton<IUserService, UserService>();
+                services.AddSingleton<IProjectService, ProjectService>();
+                services.AddSingleton<ITaskService, TaskService>();
+                services.AddSingleton<IJwtAuthenticationManagerService, JwtAuthenticationManagerService>();
+                services.AddSwaggerGen(options =>
                 {
-                    await context.Response.WriteAsync("Hello World!");
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
                 });
-            });
+                options.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement
+                    {
+                        { new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[]{ }
+                        }
+                    }
+                    );
+                    options.SwaggerDoc("v1", new OpenApiInfo()
+                    {
+                        Title = "API"
+                    });
+                });
+            }
+
+            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+            {
+
+                if (env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                }
+
+                app.UseHttpsRedirection();
+
+                app.UseRouting();
+
+                app.UseAuthentication();
+                app.UseAuthorization();
+
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
+            }
         }
     }
-}
+
