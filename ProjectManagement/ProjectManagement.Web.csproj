@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProjectManagement.Domain\ProjectManagement.Domain.csproj">
+    <ProjectReference Include="..\ProjectManagement.Repository\ProjectManagement.Repository.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>

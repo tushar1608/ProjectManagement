@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManagement.Web", "Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManagement.Domain", "ProjectManagement.Domain\ProjectManagement.Domain.csproj", "{C300A8CF-95D5-4B0D-BF00-F86D04C2F579}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManagement.DataAccess", "ProjectManagement.DataAccess\ProjectManagement.DataAccess.csproj", "{85C7A1CA-37E9-4E9D-B480-3B785EB4A8A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManagement.Repository", "ProjectManagement.Repository\ProjectManagement.Repository.csproj", "{F6AB8FF2-0F69-486E-B385-846A94A4BE32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{C300A8CF-95D5-4B0D-BF00-F86D04C2F579}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C300A8CF-95D5-4B0D-BF00-F86D04C2F579}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C300A8CF-95D5-4B0D-BF00-F86D04C2F579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85C7A1CA-37E9-4E9D-B480-3B785EB4A8A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85C7A1CA-37E9-4E9D-B480-3B785EB4A8A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85C7A1CA-37E9-4E9D-B480-3B785EB4A8A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85C7A1CA-37E9-4E9D-B480-3B785EB4A8A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6AB8FF2-0F69-486E-B385-846A94A4BE32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6AB8FF2-0F69-486E-B385-846A94A4BE32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6AB8FF2-0F69-486E-B385-846A94A4BE32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6AB8FF2-0F69-486E-B385-846A94A4BE32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
