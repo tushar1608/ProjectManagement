@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ProjectManagement.Repository;
 using ProjectManagement.Web.Interfaces;
 using ProjectManagement.Web.Models;
-using System.Threading.Tasks;
+using ProjectManager.Domain.Entities;
 
 namespace ProjectManagement.Web.Controllers
 {
@@ -12,28 +14,30 @@ namespace ProjectManagement.Web.Controllers
     public class TaskController : ControllerBase
     {
         private readonly ILogger<TaskController> _logger;
-        private readonly ITaskService _taskService;
+        private readonly IRepository<Task> _repository;
 
-        public TaskController(ILogger<TaskController> logger, ITaskService taskService)
+        public TaskController(ILogger<TaskController> logger, IRepository<Task> repository)
         {
             _logger = logger;
-            _taskService = taskService;
+            _repository = repository;
         }
 
         [HttpPost]
         [Route("api/Task")]
-        public async Task<IActionResult> Create(TaskCreationRequest task)
+        public async System.Threading.Tasks.Task<IActionResult> Create(TaskCreationRequest task)
         {
             _logger.LogInformation("Request to create new task", task.ProjectId, task.AssignedToUserId);
-            return Ok(await _taskService.CreateTask(task));
+            var taskEntity = new Task {Id = Guid.NewGuid().ToString(), AssignedToUserId = task.AssignedToUserId, Detail = task.Detail, ProjectId = task.ProjectId };
+            return Ok(_repository.Add(taskEntity));
         }
 
         [HttpPut]
         [Route("api/Task")]
-        public async Task<IActionResult> Update(TaskUpdateRequest task)
+        public async System.Threading.Tasks.Task<IActionResult> Update(TaskUpdateRequest task)
         {
             _logger.LogInformation($"Request to update task {task.Id}");
-            if (await _taskService.UpdateTask(task) == null)
+            var taskEntity = new Task { Id = task.Id, AssignedToUserId = task.AssignedToUserId, Detail = task.Detail, ProjectId = task.ProjectId };
+            if (_repository.Update(taskEntity) == null)
             {
                 return NotFound($"No entry for task id: {task.Id} found to update");
             }
@@ -42,18 +46,18 @@ namespace ProjectManagement.Web.Controllers
 
         [HttpGet]
         [Route("api/Task")]
-        public async Task<IActionResult> GetAll()
+        public async System.Threading.Tasks.Task<IActionResult> GetAll()
         {
             _logger.LogInformation("All tasks requested");
-            return Ok(await _taskService.GetAllTasks());
+            return Ok(_repository.All());
         }
 
         [HttpGet]
         [Route("api/Task/{id}")]
-        public async Task<IActionResult> Get(string id)
+        public async System.Threading.Tasks.Task<IActionResult> Get(string id)
         {
             _logger.LogInformation($"Request to get task with id: {id}");
-            var task = await _taskService.GetTask(id);
+            var task = _repository.Get(id);
             if (task == null)
             {
                 return NotFound($"No task found with id {id}");
@@ -63,11 +67,11 @@ namespace ProjectManagement.Web.Controllers
 
         [HttpDelete]
         [Route("api/Task/{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async System.Threading.Tasks.Task<IActionResult> Delete(string id)
         {
             _logger.LogInformation($"Request to delete task with id: {id}");
-            var isDeleteSuccessful = await _taskService.DeleteTask(id);
-            if (isDeleteSuccessful == false)
+            var deletedEntity = _repository.Delete(id);
+            if (deletedEntity == null)
             {
                 return NotFound($"No task found with id {id}");
             }

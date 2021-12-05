@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ProjectManagement.Web.Interfaces;
+using ProjectManagement.Repository;
 using ProjectManagement.Web.Models;
+using ProjectManager.Domain.Entities;
+using ProjectManager.Domain.ValueObjects;
+using System;
 using System.Threading.Tasks;
 
 namespace ProjectManagement.Web.Controllers
@@ -12,12 +15,12 @@ namespace ProjectManagement.Web.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        private readonly IUserService _userService;
+        private readonly IRepository<User> _repository;
 
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        public UserController(ILogger<UserController> logger, IRepository<User> repository)
         {
             _logger = logger;
-            _userService = userService;
+            _repository = repository;
         }
 
         [AllowAnonymous]
@@ -26,7 +29,8 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Create(UserCreationRequest user)
         {
             _logger.LogInformation("Request to create new user", user.FirstName, user.LastName, user.Email);
-            return Ok(await _userService.CreateUser(user));
+            var userEntity = new User { Id = Guid.NewGuid().ToString(), FirstName = user.FirstName, LastName = user.LastName, Email = Email.From(user.Email), Password = user.Password };
+            return Ok(_repository.Add(userEntity).Id);
         }
 
         [HttpPut]
@@ -34,7 +38,8 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Update(UserUpdateRequest user)
         {
             _logger.LogInformation($"Request to update user {user.Id}");
-            if (await _userService.UpdateUser(user) == null)
+            var userEntity = new User { Id = user.Id, FirstName = user.FirstName, LastName = user.LastName, Email = Email.From(user.Email), Password = user.Password };
+            if (_repository.Update(userEntity) == null)
             {
                 return NotFound($"No entry for user id: {user.Id} found to update");
             }
@@ -46,7 +51,7 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> GetAll()
         {
             _logger.LogInformation("All users requested");
-            return Ok(await _userService.GetAllUsers());
+            return Ok(_repository.All());
         }
 
         [HttpGet]
@@ -54,7 +59,7 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Get(string id)
         {
             _logger.LogInformation($"Request to get user with id: {id}");
-            var user = await _userService.GetUser(id);
+            var user = _repository.Get(id);
             if (user == null)
             {
                 return NotFound($"No user found with id {id}");
@@ -67,12 +72,12 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             _logger.LogInformation($"Request to delete user with id: {id}");
-            var isDeleteSuccessful = await _userService.DeleteUser(id);
-            if (isDeleteSuccessful == false)
+            var deletedEntity = _repository.Delete(id);
+            if (deletedEntity == null)
             {
                 return NotFound($"No user found with id {id}");
             }
-            return Ok($"USer with id : {id} deleted");
+            return Ok($"User with id : {id} deleted");
         }
     }
 }

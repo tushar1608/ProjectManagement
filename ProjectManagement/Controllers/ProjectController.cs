@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ProjectManagement.Web.Interfaces;
+using ProjectManagement.Repository;
 using ProjectManagement.Web.Models;
+using ProjectManager.Domain.Entities;
+using System;
 using System.Threading.Tasks;
 
 namespace ProjectManagement.Web.Controllers
@@ -12,12 +14,12 @@ namespace ProjectManagement.Web.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly ILogger<ProjectController> _logger;
-        private readonly IProjectService _projectService;
+        private readonly IRepository<Project> _repository;
 
-        public ProjectController(ILogger<ProjectController> logger, IProjectService projectService)
+        public ProjectController(ILogger<ProjectController> logger, IRepository<Project> repository)
         {
             _logger = logger;
-            _projectService = projectService;
+            _repository = repository;
         }
 
         [HttpPost]
@@ -25,7 +27,8 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Create(ProjectCreationRequest project)
         {
             _logger.LogInformation("Request to create new project", project.Name);
-            return Ok(await _projectService.CreateProject(project));
+            var projectEntity = new Project { Id = Guid.NewGuid().ToString(), Detail = project.Detail, Name = project.Name };
+            return Ok(_repository.Add(projectEntity));
         }
 
         [HttpPut]
@@ -33,7 +36,8 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Update(ProjectUpdateRequest project)
         {
             _logger.LogInformation($"Request to update project {project.Id}");
-            if (await _projectService.UpdateProject(project) == null)
+            var projectEntity = new Project { Id = project.Id, Detail = project.Detail, Name = project.Name };
+            if (_repository.Update(projectEntity) == null)
             {
                 return NotFound($"No entry for project id: {project.Id} found to update");
             }
@@ -45,7 +49,7 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> GetAll()
         {
             _logger.LogInformation("All projects requested");
-            return Ok(await _projectService.GetAllProjects());
+            return Ok(_repository.All());
         }
 
         [HttpGet]
@@ -53,7 +57,7 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Get(string id)
         {
             _logger.LogInformation($"Request to get project with id: {id}");
-            var project = await _projectService.GetProject(id);
+            var project = _repository.Get(id);
             if (project == null)
             {
                 return NotFound($"No project found with id {id}");
@@ -66,8 +70,8 @@ namespace ProjectManagement.Web.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             _logger.LogInformation($"Request to delete project with id: {id}");
-            var isDeleteSuccessful = await _projectService.DeleteProject(id);
-            if (isDeleteSuccessful == false)
+            var deletedEntity = _repository.Delete(id);
+            if (deletedEntity == null)
             {
                 return NotFound($"No project found with id {id}");
             }
