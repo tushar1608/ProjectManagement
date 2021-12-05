@@ -1,4 +1,5 @@
-﻿using ProjectManagement.Domain.Common;
+﻿using System.Text.Json.Serialization;
+using ProjectManagement.Domain.Common;
 
 namespace ProjectManager.Domain.Entities
 {
@@ -7,6 +8,10 @@ namespace ProjectManager.Domain.Entities
         public string Id { get; set; }
         public string Name { get; set; }
         public string Detail { get; set; }
+
+        //Navigation props ef core
+        [JsonIgnore]
+        public Task Task { get; set; }
     }
 }
 

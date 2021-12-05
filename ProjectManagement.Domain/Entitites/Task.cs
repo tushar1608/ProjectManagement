@@ -1,4 +1,5 @@
 ﻿
+using System.Text.Json.Serialization;
 using ProjectManagement.Domain.Common;
 using ProjectManager.Domain.Enums;
 
@@ -11,6 +12,12 @@ namespace ProjectManager.Domain.Entities
         public Status Status { get; set; }
         public string AssignedToUserId { get; set; }
         public string Detail { get; set; }
+
+        //Navigation property ef core
+        [JsonIgnore]
+        public Project Project { get; set; }
+        [JsonIgnore]
+        public User User { get; set; }
     }
 }
 

@@ -1,4 +1,6 @@
-﻿using ProjectManager.Domain.ValueObjects;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using ProjectManager.Domain.ValueObjects;
 
 namespace ProjectManager.Domain.Entities
 {
@@ -9,5 +11,9 @@ namespace ProjectManager.Domain.Entities
         public string LastName { get; set; }
         public Email Email { get; set; }
         public string Password { get; set; }
+
+        // Navigation property ef core
+        [JsonIgnore]
+        public IList<Task> Tasks { get; set; }
     }
 }
