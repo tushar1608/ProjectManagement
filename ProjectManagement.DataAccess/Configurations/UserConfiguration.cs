@@ -10,6 +10,7 @@ namespace ProjectManagement.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(t => t.Id);
+            builder.HasAlternateKey(t => t.Id);
 
             builder.Property(t => t.Id)
                 .HasMaxLength(50)

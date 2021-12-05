@@ -8,6 +8,7 @@ namespace ProjectManagement.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Project> builder)
         {
+            builder.HasKey(t => t.Id);
 
             builder.Property(t => t.Id)
                 .HasMaxLength(50)
