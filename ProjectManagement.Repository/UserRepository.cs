@@ -16,7 +16,6 @@ namespace ProjectManagement.Repository
 
         public override User Add(User user)
         {
-
             var entity = context.Add(user).Entity;
             context.SaveChanges();
             return entity;
