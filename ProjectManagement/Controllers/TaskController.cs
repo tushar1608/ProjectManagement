@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProjectManagement.Repository;
-using ProjectManagement.Web.Interfaces;
 using ProjectManagement.Web.Models;
 using ProjectManager.Domain.Entities;
 

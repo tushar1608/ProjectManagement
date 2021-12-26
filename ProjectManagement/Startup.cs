@@ -12,6 +12,7 @@ using System.Text;
 using ProjectManagement.DataAccess;
 using ProjectManager.Domain.Entities;
 using ProjectManagement.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectManagement
 {
@@ -28,7 +29,6 @@ namespace ProjectManagement
         public void ConfigureServices(IServiceCollection services)
         {
             services.DataAccess(Configuration);
-
             services.AddScoped<IRepository<User>, UserRepository>();
             services.AddScoped<IRepository<Project>, ProjectRepository>();
             services.AddScoped<IRepository<Task>, TaskRepository>();
@@ -96,15 +96,18 @@ namespace ProjectManagement
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+                app.UseAuthentication();
+                app.UseAuthorization();
 
             app.UseSwagger();
             app.UseSwaggerUI();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                if (env.IsDevelopment())
+                    endpoints.MapControllers().WithMetadata(new AllowAnonymousAttribute());
+                else
+                    endpoints.MapControllers();
             });
         }
     }
