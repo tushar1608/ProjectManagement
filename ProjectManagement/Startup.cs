@@ -33,6 +33,10 @@ namespace ProjectManagement
             services.AddScoped<IRepository<Project>, ProjectRepository>();
             services.AddScoped<IRepository<Task>, TaskRepository>();
             services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyCorsPolicy", policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            });
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -91,6 +95,8 @@ namespace ProjectManagement
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("AllowAnyCorsPolicy");
 
             app.UseHttpsRedirection();
 

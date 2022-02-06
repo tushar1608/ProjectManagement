@@ -35,7 +35,7 @@ namespace ProjectManagement.Web.Controllers
         public async System.Threading.Tasks.Task<IActionResult> Update(TaskUpdateRequest task)
         {
             _logger.LogInformation($"Request to update task {task.Id}");
-            var taskEntity = new Task { Id = task.Id, AssignedToUserId = task.AssignedToUserId, Detail = task.Detail, ProjectId = task.ProjectId };
+            var taskEntity = new Task { Id = task.Id, AssignedToUserId = task.AssignedToUserId, Detail = task.Detail, ProjectId = task.ProjectId, Status = task.Status };
             if (_repository.Update(taskEntity) == null)
             {
                 return NotFound($"No entry for task id: {task.Id} found to update");
